@@ -1,5 +1,7 @@
 import requests
 from APIKey import api_key
+import json
+import os
 
 class UserInfo:
     """class to get user info"""
@@ -44,6 +46,28 @@ class UserInfo:
         summonerRankInfo["Losses"] = userRankData[0]['losses']
         return summonerRankInfo
 
+    def storeUserInfo(self):
+        """function to store the information about the summoner"""
+        # use getUserInfo and getUserRankInfo, use them to write to a file.
+        # seperate files or the same? both?
+        filenameInfo = f"data/{self.summonerName}/{self.summonerName}Info.json"
+        filenameRankInfo = f"data/{self.summonerName}/{self.summonerName}RankInfo.json"
+        filenameFullInfo = f"data/{self.summonerName}/{self.summonerName}FullInfo.json"
+
+        os.mkdir(f"data/{self.summonerName}")
+
+        summonerInfo = self.getUserInfo()
+        summonerRankInfo = self.getUserRankInfo()
+        fullSummonerInfo = {**summonerInfo, **summonerRankInfo}
+        with open(filenameInfo, 'w') as f:
+            json.dump(summonerInfo, f, indent=4)
+        
+        with open(filenameRankInfo, 'w') as f:
+            json.dump(summonerRankInfo, f, indent=4)
+
+        with open(filenameFullInfo, 'w') as f:
+            json.dump(fullSummonerInfo, f, indent=4)
+        
 # program loop
 def main():
     summonerRajiv = UserInfo("Rajiv")
@@ -56,6 +80,8 @@ def main():
     
     for k,v in userRankinfo.items():
         print(f"{k}: {v}")
+    
+    summonerRajiv.storeUserInfo()
 
 if __name__ == "__main__":
     main()
