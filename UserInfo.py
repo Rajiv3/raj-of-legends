@@ -12,73 +12,54 @@ class UserInfo:
         self.server = server
         self.api_prefix = f"https://{self.server}.api.riotgames.com"
 
+    # combined into one longer funciton to minimize API calls
     def getUserInfo(self):
         """get the user info from API"""
         url = f"{self.api_prefix}/lol/summoner/v4/summoners/by-name/{self.summonerName}?api_key={api_key}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
-        userInfo = r.json()
+        userData = r.json()
 
-        summonerInfo = {}
-        summonerInfo["Summoner name"] = userInfo['name']
-        summonerInfo["Summoner ID"] = userInfo['id']
-        summonerInfo["Account ID"] = userInfo['accountId']
-        summonerInfo["Level"] = userInfo['summonerLevel']
-        summonerInfo["Profile Pic"] = userInfo['profileIconId']
-        return summonerInfo
+        playerInfo = {}
+        playerInfo["Summoner name"] = userData['name']
+        playerInfo["Summoner ID"] = userData['id']
+        playerInfo["Account ID"] = userData['accountId']
+        playerInfo["Level"] = userData['summonerLevel']
+        playerInfo["Profile Pic"] = userData['profileIconId']
 
-    # current issue: This calls the API twice. 
-    # Would prefer to write to something then call from there rather than 
-    # calling the API multiple times?        
-    def getUserRankInfo(self):
-        """get the users rank info from API"""
-        summonerId = self.getUserInfo()["Summoner ID"]
-        url = f"{self.api_prefix}/lol/league/v4/entries/by-summoner/{summonerId}?api_key={api_key}"
-        r = requests.get(url)
+        urlRank = f"{self.api_prefix}/lol/league/v4/entries/by-summoner/{playerInfo['Summoner ID']}?api_key={api_key}"
+        rRank = requests.get(urlRank)
         print(f"Status code: {r.status_code}")
-        userRankData = r.json()
+        userRankData = rRank.json()
+        
+        playerRankInfo = {}
+        playerRankInfo["Queue Type"] = userRankData[0]['queueType']
+        playerRankInfo["Tier"] = userRankData[0]['tier']
+        playerRankInfo["Rank"] = userRankData[0]['rank']
+        playerRankInfo["Wins"] = userRankData[0]['wins']
+        playerRankInfo["Losses"] = userRankData[0]['losses']
+        
+        fullPlayerInfo = {**playerInfo, **playerRankInfo}
 
-        summonerRankInfo = {}
-        summonerRankInfo["Queue Type"] = userRankData[0]['queueType']
-        summonerRankInfo["Tier"] = userRankData[0]['tier']
-        summonerRankInfo["Rank"] = userRankData[0]['rank']
-        summonerRankInfo["Wins"] = userRankData[0]['wins']
-        summonerRankInfo["Losses"] = userRankData[0]['losses']
-        return summonerRankInfo
+        return fullPlayerInfo
 
     def storeUserInfo(self):
         """function to store the information about the summoner"""
-        # use getUserInfo and getUserRankInfo, use them to write to a file.
-        # seperate files or the same? both?
-        filenameInfo = f"data/{self.summonerName}/{self.summonerName}Info.json"
-        filenameRankInfo = f"data/{self.summonerName}/{self.summonerName}RankInfo.json"
-        filenameFullInfo = f"data/{self.summonerName}/{self.summonerName}FullInfo.json"
+        if not os.path.exists(f"data/{self.summonerName}"):
+            os.makedirs(f"data/{self.summonerName}")
+        filename = f"data/{self.summonerName}/{self.summonerName}PlayerSummary.json"
 
-        os.mkdir(f"data/{self.summonerName}")
+        playerInfo = self.getUserInfo()
 
-        summonerInfo = self.getUserInfo()
-        summonerRankInfo = self.getUserRankInfo()
-        fullSummonerInfo = {**summonerInfo, **summonerRankInfo}
-        with open(filenameInfo, 'w') as f:
-            json.dump(summonerInfo, f, indent=4)
-        
-        with open(filenameRankInfo, 'w') as f:
-            json.dump(summonerRankInfo, f, indent=4)
+        with open(filename, 'w') as f:
+            json.dump(playerInfo, f, indent=4)
 
-        with open(filenameFullInfo, 'w') as f:
-            json.dump(fullSummonerInfo, f, indent=4)
-        
-# program loop
 def main():
     summonerRajiv = UserInfo("Rajiv")
 
     userInfo = summonerRajiv.getUserInfo()
-    userRankinfo = summonerRajiv.getUserRankInfo()
 
     for k,v in userInfo.items():
-        print(f"{k}: {v}")
-    
-    for k,v in userRankinfo.items():
         print(f"{k}: {v}")
     
     summonerRajiv.storeUserInfo()
