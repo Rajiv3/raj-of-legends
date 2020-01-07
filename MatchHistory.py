@@ -11,9 +11,6 @@ class MatchHistory:
     # Note that there is a limit to how far back the data can be fetched
     # don't want to delete old data (how to solve? diff files?)
 
-    # before running match history, must have the accountId of the summoner
-    # can get it from the file - check existence of file (if it doesnt?)
-
     def __init__(self, summonerName):
         self.summonerName = summonerName
         self.serverSettings = ServerSettings("na1")
