@@ -2,5 +2,5 @@
 Use this to store the data in a file. Then save the information for later.
 Enter in a summoner and it will pull the data from last time, with the option to update it.
 
-
-Refactor variable names
+def getPlayerInfo(self):
+Need to deal with ranked/flex better

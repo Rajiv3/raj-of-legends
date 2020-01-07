@@ -1,21 +1,23 @@
 import requests
-from APIKey import api_key
 import json
 import os
 
-class UserInfo:
+from APIKey import api_key
+from ServerSettings import ServerSettings
+
+
+class PlayerInfo:
     """class to get user info"""
 
     def __init__(self, summonerName, server = "na1"):
         """initialize class """
         self.summonerName = summonerName
-        self.server = server
-        self.api_prefix = f"https://{self.server}.api.riotgames.com"
+        self.serverSettings = ServerSettings('na1')
 
     # combined into one longer funciton to minimize API calls
-    def getUserInfo(self):
+    def getPlayerInfo(self):
         """get the user info from API"""
-        url = f"{self.api_prefix}/lol/summoner/v4/summoners/by-name/{self.summonerName}?api_key={api_key}"
+        url = f"{self.serverSettings.api_prefix}/lol/summoner/v4/summoners/by-name/{self.summonerName}{self.serverSettings.api_suffix}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
         userData = r.json()
@@ -27,42 +29,33 @@ class UserInfo:
         playerInfo["Level"] = userData['summonerLevel']
         playerInfo["Profile Pic"] = userData['profileIconId']
 
-        urlRank = f"{self.api_prefix}/lol/league/v4/entries/by-summoner/{playerInfo['Summoner ID']}?api_key={api_key}"
+        urlRank = f"{self.serverSettings.api_prefix}/lol/league/v4/entries/by-summoner/{playerInfo['Summoner ID']}{self.serverSettings.api_suffix}"
         rRank = requests.get(urlRank)
-        print(f"Status code: {r.status_code}")
+        print(f"Status code: {rRank.status_code}")
         userRankData = rRank.json()
         
         playerRankInfo = {}
-        playerRankInfo["Queue Type"] = userRankData[0]['queueType']
-        playerRankInfo["Tier"] = userRankData[0]['tier']
-        playerRankInfo["Rank"] = userRankData[0]['rank']
-        playerRankInfo["Wins"] = userRankData[0]['wins']
-        playerRankInfo["Losses"] = userRankData[0]['losses']
+        for queueData in userRankData:
+            if queueData['queueType'] == "RANKED_SOLO_5x5":
+                playerRankInfo["Queue Type"] = queueData['queueType']
+                playerRankInfo["Tier"] = queueData['tier']
+                playerRankInfo["Rank"] = queueData['rank']
+                playerRankInfo["Wins"] = queueData['wins']
+                playerRankInfo["Losses"] = queueData['losses']
+            else:
+                continue
         
         fullPlayerInfo = {**playerInfo, **playerRankInfo}
 
         return fullPlayerInfo
 
-    def storeUserInfo(self):
+    def storePlayerInfo(self):
         """function to store the information about the summoner"""
         if not os.path.exists(f"data/{self.summonerName}"):
             os.makedirs(f"data/{self.summonerName}")
         filename = f"data/{self.summonerName}/{self.summonerName}PlayerSummary.json"
 
-        playerInfo = self.getUserInfo()
+        playerInfo = self.getPlayerInfo()
 
         with open(filename, 'w') as f:
             json.dump(playerInfo, f, indent=4)
-
-def main():
-    summonerRajiv = UserInfo("Rajiv")
-
-    userInfo = summonerRajiv.getUserInfo()
-
-    for k,v in userInfo.items():
-        print(f"{k}: {v}")
-    
-    summonerRajiv.storeUserInfo()
-
-if __name__ == "__main__":
-    main()

@@ -1,0 +1,32 @@
+[
+    {
+        "leagueId": "99905f10-850f-11e9-8251-c81f66dbb56c",
+        "queueType": "RANKED_FLEX_SR",
+        "tier": "DIAMOND",
+        "rank": "IV",
+        "summonerId": "UhSQpb_Hl8HWnkPpja0W8qbNlEpB8FNHpHIQJRu4pjoTcAI",
+        "summonerName": "YoungAspiring",
+        "leaguePoints": 70,
+        "wins": 69,
+        "losses": 61,
+        "veteran": false,
+        "inactive": false,
+        "freshBlood": false,
+        "hotStreak": false
+    },
+    {
+        "leagueId": "122424f0-7ac7-11e9-8251-c81f66dbb56c",
+        "queueType": "RANKED_SOLO_5x5",
+        "tier": "DIAMOND",
+        "rank": "II",
+        "summonerId": "UhSQpb_Hl8HWnkPpja0W8qbNlEpB8FNHpHIQJRu4pjoTcAI",
+        "summonerName": "YoungAspiring",
+        "leaguePoints": 0,
+        "wins": 465,
+        "losses": 462,
+        "veteran": false,
+        "inactive": false,
+        "freshBlood": false,
+        "hotStreak": false
+    }
+]
