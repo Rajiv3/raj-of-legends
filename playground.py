@@ -7,6 +7,11 @@ rRank = requests.get(urlRank)
 print(f"Status code: {rRank.status_code}")
 userRankData = rRank.json()
 
-with open("testing.json", 'w') as f:
-    json.dump(userRankData, f, indent=4)
-print(userRankData)
+# with open("testing.json", 'w') as f:
+#     json.dump(userRankData, f, indent=4)
+# print(userRankData)
+
+def testFunction(test):
+    print(test)
+
+testFunction(test="car")

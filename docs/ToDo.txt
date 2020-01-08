@@ -4,3 +4,6 @@ Enter in a summoner and it will pull the data from last time, with the option to
 
 def getPlayerInfo(self):
 Need to deal with ranked/flex better
+
+
+NEED to check if required things exist before calling them - avoiding this will result in disaster

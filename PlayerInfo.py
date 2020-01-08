@@ -17,7 +17,7 @@ class PlayerInfo:
     # combined into one longer funciton to minimize API calls
     def getPlayerInfo(self):
         """get the user info from API"""
-        url = f"{self.serverSettings.api_prefix}/lol/summoner/v4/summoners/by-name/{self.summonerName}{self.serverSettings.api_suffix}"
+        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiPlayerSummonerName}{self.summonerName}?{self.serverSettings.api_suffix}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
         userData = r.json()
@@ -29,7 +29,7 @@ class PlayerInfo:
         playerInfo["Level"] = userData['summonerLevel']
         playerInfo["Profile Pic"] = userData['profileIconId']
 
-        urlRank = f"{self.serverSettings.api_prefix}/lol/league/v4/entries/by-summoner/{playerInfo['Summoner ID']}{self.serverSettings.api_suffix}"
+        urlRank = f"{self.serverSettings.api_prefix}{self.serverSettings.apiRankedStatsSummonerName}{playerInfo['Summoner ID']}?{self.serverSettings.api_suffix}"
         rRank = requests.get(urlRank)
         print(f"Status code: {rRank.status_code}")
         userRankData = rRank.json()
