@@ -10,7 +10,7 @@ from FileStorage import FileStorage
 class MatchHistory:
     """Class to get and maintain the match history of a user"""
     # Note that there is a limit to how far back the data can be fetched
-    # don't want to delete old data (how to solve? diff files?)
+    # don't want to delete old data (how to solve? add to dictionary?)
 
     def __init__(self, summonerName, server = "na1", champion = "", queue = ""):
         self.summonerName = summonerName
@@ -64,4 +64,5 @@ class MatchHistory:
     
     def championsPlayed(self):
         """return a list of the champions played in the provided matchHistory"""
+        # check the file, get a list, return it.
         pass
