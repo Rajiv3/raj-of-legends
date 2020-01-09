@@ -2,15 +2,19 @@ import json
 import requests
 import os
 from ServerSettings import ServerSettings
+from FileStorage import FileStorage
 
 class ChampionInfo:
     """class to get information about champions"""
 
-    def __init__(self):
-        self.serverSettings = ServerSettings()
-        self.championJsonFilename = f"data/championInfo.json"
-        self.championKeyIdFilename = f"data/ChampionKeyIdPairs.json"
-        self.championIdKeyFilename = f"data/ChampionIdKeyPairs.json"
+    def __init__(self, server = "na1"):
+        self.serverSettings = ServerSettings(server)
+        self.fileStorage = FileStorage()
+        self.championInfoDirectory = f"Champions"
+        self.championJsonFilename = f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}/championInfo.json"
+        self.championKeyIdFilename = f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}/championKeyIdPairs.json"
+        self.championIdKeyFilename = f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}/championIdKeyPairs.json"
+        
 
     def checkChampionJson(self):
         """check if the champion info json exists"""
@@ -28,8 +32,7 @@ class ChampionInfo:
 
     def storeChampionJson(self):
         """save the entire champion json"""
-        if not os.path.exists(f"{self.championJsonFilename}"):
-            os.makedirs(f"{self.championJsonFilename}")
+        self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}")
 
         champions = self.getChampionJson()
 
@@ -38,41 +41,24 @@ class ChampionInfo:
             json.dump(champions, f, indent=4)
 
         
-    def matchChampionKeyId(self):
+    def matchChampionKeyId(self, order):
         """match the champion key with the name of the champion,return dict"""
-
-        filename = f"{self.championJsonFilename}"
-        with open(filename) as f:
-            fullChampionInfo = json.load(f)
-
-        allChampions = fullChampionInfo['data']
-
-        championIds = []
-        championKeyIds = {}
-        for champion in allChampions:
-            championIds.append(champion)
-        
-        for championName in championIds:
-            key = allChampions[championName]['key']
-            champion = allChampions[championName]['name']
-            championKeyIds[key] = champion
-        
+        championKeyIds = self.buildChampMatches(order)
         return championKeyIds
     
-    def storeChampionKeyId(self):
+    def storeChampionKeyId(self, order):
         """store the champion Key ID pairs in a file"""
-        if not os.path.exists(f"data"):
-            os.makedirs(f"data")
-        filename = f"{self.championKeyIdFilename}"
+        self.storeChampionPair(order)
 
-        championsKeyId = self.matchChampionKeyId()
+    def getChampionKeyOrId(self, order, championKey):
+        """Enter champion key, return ID(name)"""
+        champion = self.findPair(order, championKey)
+        return champion
 
-        with open(filename, 'w') as f:
-            json.dump(championsKeyId, f, indent=4)
 
-    def matchChampionIdKey(self):
-        """match the champion name with the key of the champion,return dict"""
-
+    """helpers below"""
+    def buildChampMatches(self, order):
+        """helper function to build the dictionary"""
         filename = f"{self.championJsonFilename}"
         with open(filename) as f:
             fullChampionInfo = json.load(f)
@@ -80,44 +66,43 @@ class ChampionInfo:
         allChampions = fullChampionInfo['data']
 
         championIds = []
-        championIdKeys = {}
+        championPairs = {}
+        
         for champion in allChampions:
             championIds.append(champion)
         
         for championName in championIds:
-            champion = allChampions[championName]['name']
             key = allChampions[championName]['key']
-            championIdKeys[champion] = key
-        
-        return championIdKeys
-    
-    def storeChampionIdKey(self):
-        """store the champion IDs in a file"""
-        if not os.path.exists(f"data"):
-            os.makedirs(f"data")
-        filename = f"{self.championIdKeyFilename}"
+            champion = allChampions[championName]['name']
+            if order == "KeyId":
+                championPairs[key] = champion
+            elif order == "IdKey":
+                championPairs[champion] = key
+        return championPairs
 
-        championsIdKey = self.matchChampionIdKey()
+    def storeChampionPair(self, order):
+        """helper function to store the champion key/id pairs"""
+        self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}")
+        if order == "KeyId":
+            filename = f"{self.championKeyIdFilename}"
+        elif order == "IdKey":
+            filename = f"{self.championIdKeyFilename}"
+
+        championsPair = self.matchChampionKeyId(order)
+
 
         with open(filename, 'w') as f:
-            json.dump(championsIdKey, f, indent=4)
+            json.dump(championsPair, f, indent=4)
 
-        return filename
+    def findPair(self, order, champion):
+        """helper function to return the champ if either Id or Key is entered"""
+        if order == "KeyId":
+            filename = f"{self.championKeyIdFilename}"
+        elif order == "IdKey":
+            filename = f"{self.championIdKeyFilename}"
 
-    def championIdToKey(self, championId):
-        """Enter champion ID(name), return key"""
-        filename = f"{self.championIdKeyFilename}"
         with open(filename) as f:
-            championIdKeyPairs = json.load(f)
+            championPairs = json.load(f)
         
-        championKey = championIdKeyPairs[championId]
-        return championKey
-
-    def championKeyToId(self, championId):
-        """Enter champion key, return ID(name)"""
-        filename = f"{self.championKeyIdFilename}"
-        with open(filename) as f:
-            championKeyIdPairs = json.load(f)
-
-        championId = championIdKeyPairs[championId]
-        return championId
+        champion = championPairs[champion]
+        return champion

@@ -4,7 +4,7 @@ import os
 
 from APIKey import api_key
 from ServerSettings import ServerSettings
-
+from FileStorage import FileStorage
 
 class PlayerInfo:
     """class to get user info"""
@@ -12,7 +12,9 @@ class PlayerInfo:
     def __init__(self, summonerName, server = "na1"):
         """initialize class """
         self.summonerName = summonerName
-        self.serverSettings = ServerSettings('na1')
+        self.server = server
+        self.serverSettings = ServerSettings(server)
+        self.fileStorage = FileStorage()
 
     # combined into one longer funciton to minimize API calls
     def getPlayerInfo(self):
@@ -51,9 +53,8 @@ class PlayerInfo:
 
     def storePlayerInfo(self):
         """function to store the information about the summoner"""
-        if not os.path.exists(f"data/{self.summonerName}"):
-            os.makedirs(f"data/{self.summonerName}")
-        filename = f"data/{self.summonerName}/{self.summonerName}PlayerSummary.json"
+        self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
+        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}PlayerSummary.json"
 
         playerInfo = self.getPlayerInfo()
 
