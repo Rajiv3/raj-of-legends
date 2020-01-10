@@ -15,8 +15,8 @@ def main():
 
     champions = ChampionInfo()
     champions.storeChampionJson()
-    champions.storeChampionKeyId("IdKey")
-    champions.storeChampionKeyId("KeyId")
+    champions.storeChampionPairs("IdKey")
+    champions.storeChampionPairs("KeyId")
     print(champions.getChampionKeyOrId("IdKey", "Anivia"))
 
 

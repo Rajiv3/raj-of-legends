@@ -25,7 +25,6 @@ class ChampionInfo:
         url = f"{self.serverSettings.dragonChampJson}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
-
         champions = r.json()
 
         return champions
@@ -40,25 +39,8 @@ class ChampionInfo:
         with open(filename, 'w') as f:
             json.dump(champions, f, indent=4)
 
-        
-    def matchChampionKeyId(self, order):
+    def buildChampionPairs(self, order):
         """match the champion key with the name of the champion,return dict"""
-        championKeyIds = self.buildChampMatches(order)
-        return championKeyIds
-    
-    def storeChampionKeyId(self, order):
-        """store the champion Key ID pairs in a file"""
-        self.storeChampionPair(order)
-
-    def getChampionKeyOrId(self, order, championKey):
-        """Enter champion key, return ID(name)"""
-        champion = self.findPair(order, championKey)
-        return champion
-
-
-    """helpers below"""
-    def buildChampMatches(self, order):
-        """helper function to build the dictionary"""
         filename = f"{self.championJsonFilename}"
         with open(filename) as f:
             fullChampionInfo = json.load(f)
@@ -80,7 +62,7 @@ class ChampionInfo:
                 championPairs[champion] = key
         return championPairs
 
-    def storeChampionPair(self, order):
+    def storeChampionPairs(self, order):
         """helper function to store the champion key/id pairs"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}")
         if order == "KeyId":
@@ -88,13 +70,12 @@ class ChampionInfo:
         elif order == "IdKey":
             filename = f"{self.championIdKeyFilename}"
 
-        championsPair = self.matchChampionKeyId(order)
-
+        championsPair = self.buildChampionPairs(order)
 
         with open(filename, 'w') as f:
             json.dump(championsPair, f, indent=4)
 
-    def findPair(self, order, champion):
+    def getChampionKeyOrId(self, order, champion):
         """helper function to return the champ if either Id or Key is entered"""
         if order == "KeyId":
             filename = f"{self.championKeyIdFilename}"
