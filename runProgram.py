@@ -20,7 +20,7 @@ def main():
     print(champions.getChampionKeyOrId("IdKey", "Anivia"))
 
 
-    summonerName = 'Rajiv'
+    summonerName = 'alienburgerpoo'
     summoner = PlayerInfo(summonerName, "na1")
     summoner.storePlayerInfo()
 

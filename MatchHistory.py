@@ -18,32 +18,24 @@ class MatchHistory:
         self.queue = queue
         self.server = server
         self.serverSettings = ServerSettings(server)
-        self.championInfo = ChampionInfo()
+        self.championInfo = ChampionInfo(server)
         self.fileStorage = FileStorage()
+        self.playerInfo = PlayerInfo(summonerName, server)
     
     def checkPlayerData(self):
         """check if data for the user already exists, if not, build it"""
         pass
-
-    def getAccountId(self):
-        """pull the required user info from the file"""
-        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}PlayerSummary.json"
-        with open(filename) as f:
-            playerData = json.load(f)
-        accountId = playerData['Account ID']
-
-        return accountId
 
     def getMatchHistory(self):
         """get the match history with an API call"""
 
         # queue from queue name
         if self.champion != "":
-            champKey = self.championInfo.championIdToKey(self.champion)
+            champKey = self.championInfo.getChampionKeyOrId("IdKey", self.champion)
         else: 
             champKey = ""
         
-        accountId = self.getAccountId()
+        accountId = self.playerInfo.getAccountId()
         url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={self.queue}&{self.serverSettings.api_suffix}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
@@ -55,9 +47,10 @@ class MatchHistory:
     def storeMatchHistory(self):
         """store the match history in a file"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
-        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}MatchHistory.json"
+        championFile = self.champion.replace(" ", "")
+        filename = (f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{championFile}MatchHistory.json").strip()
 
-        matchHistory = self.getMatchHistory()
+        matchHistory = self.getMatchHistory()   
 
         with open(filename, 'w') as f:
             json.dump(matchHistory, f, indent=4)

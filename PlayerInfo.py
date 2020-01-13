@@ -11,12 +11,15 @@ class PlayerInfo:
 
     def __init__(self, summonerName, server = "na1"):
         """initialize class """
-        self.summonerName = summonerName
-        self.server = server
         self.serverSettings = ServerSettings(server)
         self.fileStorage = FileStorage()
+        self.summonerName = summonerName
+        self.server = server
+        self.playerSummaryFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}PlayerSummary.json"
 
-    # combined into one longer funciton to minimize API calls
+
+    # combined into one longer function to minimize API calls
+    # this is not called all the time to reduce calls to the API
     def getPlayerInfo(self):
         """get the user info from API"""
         url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiPlayerSummonerName}{self.summonerName}?{self.serverSettings.api_suffix}"
@@ -54,9 +57,91 @@ class PlayerInfo:
     def storePlayerInfo(self):
         """function to store the information about the summoner"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
-        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}PlayerSummary.json"
 
         playerInfo = self.getPlayerInfo()
 
-        with open(filename, 'w') as f:
+        with open(self.playerSummaryFilename, 'w') as f:
             json.dump(playerInfo, f, indent=4)
+
+    # below are the methods to call the player info. These are used instead of
+    # getPlayerInfo() because that calls the api each time
+    # putting them in seperate methods makes it easier to use in other places
+    def getSummonerName(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        summonerName = playerData['Summoner name']
+
+        return summonerName
+
+    def getSummonerID(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        summonerId = playerData['Summoner ID']
+
+        return summonerId
+
+    def getAccountId(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        accountId = playerData['Account ID']
+
+        return accountId
+        
+    def getPlayerLevel(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        playerLevel = playerData['Level']
+
+        return playerLevel
+
+    def getProfilePic(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        profilePic = playerData['Profile Pic']
+
+        return profilePic
+        
+    def getQueueType(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        queueType = playerData['Queue Type']
+
+        return queueType
+
+    def getPlayerTier(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        playerTier = playerData['Tier']
+
+        return playerTier
+
+    def getPlayerRank(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        playerRank = playerData['Rank']
+
+        return playerRank
+
+    def getPlayerWins(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        playerWins = playerData['Wins']
+
+        return playerWins
+        
+    def getPlayerLosses(self):
+        """pull the required user info from the file"""
+        with open(self.playerSummaryFilename) as f:
+            playerData = json.load(f)
+        playerLosses = playerData['Losses']
+
+        return playerLosses
