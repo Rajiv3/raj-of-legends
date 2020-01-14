@@ -20,12 +20,12 @@ def main():
     print(champions.getChampionKeyOrId("IdKey", "Anivia"))
 
 
-    summonerName = 'alienburgerpoo'
+    summonerName = 'Rajiv'
     summoner = PlayerInfo(summonerName, "na1")
     summoner.storePlayerInfo()
 
 
-    summonerMatchHistory = MatchHistory(summonerName, "na1")
+    summonerMatchHistory = MatchHistory(summonerName, "na1","Dr. Mundo", "solo")
     summonerMatchHistory.storeMatchHistory()
 
 

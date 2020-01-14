@@ -11,10 +11,10 @@ class PlayerInfo:
 
     def __init__(self, summonerName, server = "na1"):
         """initialize class """
-        self.serverSettings = ServerSettings(server)
-        self.fileStorage = FileStorage()
-        self.summonerName = summonerName
         self.server = server
+        self.summonerName = summonerName
+        self.serverSettings = ServerSettings(self.server)
+        self.fileStorage = FileStorage()
         self.playerSummaryFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}PlayerSummary.json"
 
 

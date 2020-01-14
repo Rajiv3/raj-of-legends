@@ -6,7 +6,7 @@ from PlayerInfo import PlayerInfo
 from ServerSettings import ServerSettings
 from ChampionInfo import ChampionInfo
 from FileStorage import FileStorage
-
+from GameInfo import GameInfo
 class MatchHistory:
     """Class to get and maintain the match history of a user"""
     # Note that there is a limit to how far back the data can be fetched
@@ -17,10 +17,11 @@ class MatchHistory:
         self.champion = champion
         self.queue = queue
         self.server = server
-        self.serverSettings = ServerSettings(server)
-        self.championInfo = ChampionInfo(server)
+        self.serverSettings = ServerSettings(self.server)
+        self.championInfo = ChampionInfo(self.server)
         self.fileStorage = FileStorage()
-        self.playerInfo = PlayerInfo(summonerName, server)
+        self.playerInfo = PlayerInfo(self.summonerName, self.server)
+        self.gameInfo = GameInfo(self.server)
     
     def checkPlayerData(self):
         """check if data for the user already exists, if not, build it"""
@@ -28,15 +29,13 @@ class MatchHistory:
 
     def getMatchHistory(self):
         """get the match history with an API call"""
-
-        # queue from queue name
         if self.champion != "":
             champKey = self.championInfo.getChampionKeyOrId("IdKey", self.champion)
         else: 
             champKey = ""
-        
+        queueId = self.gameInfo.relevantQueueIds(self.queue)
         accountId = self.playerInfo.getAccountId()
-        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={self.queue}&{self.serverSettings.api_suffix}"
+        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={queueId}&{self.serverSettings.api_suffix}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
 
@@ -48,7 +47,8 @@ class MatchHistory:
         """store the match history in a file"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
         championFile = self.champion.replace(" ", "")
-        filename = (f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{championFile}MatchHistory.json").strip()
+        queueFile = self.queue.title()
+        filename = (f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{championFile}{queueFile}MatchHistory.json").strip()
 
         matchHistory = self.getMatchHistory()   
 
