@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+from collections import Counter
 from APIKey import api_key
 from PlayerInfo import PlayerInfo
 from ServerSettings import ServerSettings
@@ -22,6 +23,10 @@ class MatchHistory:
         self.fileStorage = FileStorage()
         self.playerInfo = PlayerInfo(self.summonerName, self.server)
         self.gameInfo = GameInfo(self.server)
+
+        # file handling
+        self.queueFile = self.queue.title() #prettier
+        self.championFile = self.champion.replace(" ", "") #no spaces
     
     def checkPlayerData(self):
         """check if data for the user already exists, if not, build it"""
@@ -35,6 +40,7 @@ class MatchHistory:
             champKey = ""
         queueId = self.gameInfo.relevantQueueIds(self.queue)
         accountId = self.playerInfo.getAccountId()
+
         url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={queueId}&{self.serverSettings.api_suffix}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
@@ -46,16 +52,67 @@ class MatchHistory:
     def storeMatchHistory(self):
         """store the match history in a file"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
-        championFile = self.champion.replace(" ", "")
-        queueFile = self.queue.title()
-        filename = (f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{championFile}{queueFile}MatchHistory.json").strip()
+        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
 
         matchHistory = self.getMatchHistory()   
 
         with open(filename, 'w') as f:
             json.dump(matchHistory, f, indent=4)
     
-    def championsPlayed(self):
-        """return a list of the champions played in the provided matchHistory"""
+    def getChampionsPlayed(self):
+        """return a list of the champions played in the requested matchHistory"""
         # check the file, get a list, return it.
+        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
+        with open(filename) as f:
+            matches = json.load(f)["matches"]
+        
+        championsPlayed = []
+        for match in matches:
+            championKey = str(match["champion"])
+            championName = self.championInfo.getChampionKeyOrId("KeyId",championKey)
+            championsPlayed.append(championName)
+        
+        return championsPlayed
+    
+    def countChampionsPlayed(self):
+        """get a count of the number of times each champion is played"""
+        # built in method? or tricky?
+        # put champions into list, count them in there 
+        # .count is slow in a loop (checks over entire list everytime)
+        # use Counter instead
+        championsPlayed = self.getChampionsPlayed()
+        countChampions = Counter(championsPlayed)
+
+        return countChampions
+    
+    def getRolesPlayed(self):
+        """return a list of the roles played"""
+        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
+        with open(filename) as f:
+            matches = json.load(f)["matches"]
+        
+        rolesPlayed = []
+        for match in matches:
+            role = match["role"]
+            lane = match["lane"]
+            roleAndLane = f"{role} {lane}"
+            rolesPlayed.append(roleAndLane)
+        
+        return rolesPlayed
+        
+    def getGameIds(self):
+        """return a list of the game ids"""
+        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
+        with open(filename) as f:
+            matches = json.load(f)["matches"]
+        
+        gameIds = []
+        for match in matches:
+            gameId = match["gameId"]
+            gameIds.append(gameId)
+        
+        return gameIds
+
+    def plotMatchHistoryChampions(self):
+        """Make a plot of the champions played"""
         pass

@@ -63,7 +63,7 @@ class ChampionInfo:
         return championPairs
 
     def storeChampionPairs(self, order):
-        """helper function to store the champion key/id pairs"""
+        """store the champion key/id pairs"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}")
         if order == "KeyId":
             filename = f"{self.championKeyIdFilename}"
@@ -76,7 +76,7 @@ class ChampionInfo:
             json.dump(championsPair, f, indent=4)
 
     def getChampionKeyOrId(self, order, champion):
-        """helper function to return the champ if either Id or Key is entered"""
+        """return the champ if either Id or Key is entered"""
         if order == "KeyId":
             filename = f"{self.championKeyIdFilename}"
         elif order == "IdKey":

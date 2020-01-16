@@ -25,8 +25,11 @@ def main():
     summoner.storePlayerInfo()
 
 
-    summonerMatchHistory = MatchHistory(summonerName, "na1","Dr. Mundo", "solo")
+    # summonerMatchHistory = MatchHistory(summonerName, "na1", "Dr. Mundo", "solo")
+    summonerMatchHistory = MatchHistory(summonerName, "na1", queue="solo")
     summonerMatchHistory.storeMatchHistory()
+    print(summonerMatchHistory.getChampionsPlayed())
+    print(summonerMatchHistory.countChampionsPlayed())
 
 
 

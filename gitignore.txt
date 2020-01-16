@@ -1,2 +1,5 @@
 api_key = ""
 dataStoragePath = f""
+
+api_key is the api_key
+dataStoragePath is where you want to store the data
