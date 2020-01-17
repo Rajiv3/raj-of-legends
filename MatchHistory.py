@@ -28,9 +28,10 @@ class MatchHistory:
         # file handling
         self.queueFile = self.queue.title() #prettier
         self.championFile = self.champion.replace(" ", "") #no spaces
+        self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}MatchHistory.json"
     
     def checkPlayerData(self):
-        """check if data for the user already exists, if not, build it"""
+        """check if data for the user already exists, if not, build it. if yes, add to it(how?)"""
         pass
 
     def getMatchHistory(self):
@@ -53,7 +54,7 @@ class MatchHistory:
     def storeMatchHistory(self):
         """store the match history in a file"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
-        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
+        filename = self.matchHistoryFile
 
         matchHistory = self.getMatchHistory()   
 
@@ -63,7 +64,7 @@ class MatchHistory:
     def getChampionsPlayed(self):
         """return a list of the champions played in the requested matchHistory"""
         # check the file, get a list, return it.
-        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
+        filename = self.matchHistoryFile
         with open(filename) as f:
             matches = json.load(f)["matches"]
         
@@ -77,7 +78,6 @@ class MatchHistory:
     
     def countChampionsPlayed(self):
         """get a count of the number of times each champion is played"""
-        # use this instead of list form?
         championsPlayed = self.getChampionsPlayed()
         countChampions = Counter(championsPlayed)
 
@@ -85,7 +85,7 @@ class MatchHistory:
     
     def getRolesPlayed(self):
         """return a list of the roles played"""
-        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
+        filename = self.matchHistoryFile
         with open(filename) as f:
             matches = json.load(f)["matches"]
         
@@ -97,10 +97,17 @@ class MatchHistory:
             rolesPlayed.append(roleAndLane)
         
         return rolesPlayed
+
+    def countRolesPlayed(self):
+        """get a count of the number of times each champion is played"""
+        rolesPlayed = self.getRolesPlayed()
+        countRoles = Counter(rolesPlayed)
+
+        return countRoles
         
     def getGameIds(self):
         """return a list of the game ids"""
-        filename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.json"
+        filename = self.matchHistoryFile
         with open(filename) as f:
             matches = json.load(f)["matches"]
         
@@ -113,9 +120,11 @@ class MatchHistory:
 
     def plotMatchHistoryChampions(self):
         """Make a plot of the champions played"""
+        # ordereddict better? bit slower but prettier
         championsPlayed = self.countChampionsPlayed()
-        figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.png"
+        figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}ChampionsMatchHistory.png"
 
+        # need to make this prettier
         plt.style.use('dark_background')
         fig, ax = plt.subplots()
         ax.bar(championsPlayed.keys(), championsPlayed.values())
@@ -124,8 +133,23 @@ class MatchHistory:
 
         return ax
     
+    def plotMatchHistoryRoles(self):
+        """Make a plot of the roles played"""
+        rolesPlayed = self.countRolesPlayed()
+        figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}RolesMatchHistory.png"
+
+        plt.style.use('dark_background')
+        fig, ax = plt.subplots()
+        ax.bar(rolesPlayed.keys(), rolesPlayed.values())
+        ax.tick_params(axis='x', which='major', rotation=90)
+        plt.savefig(figureFilename,bbox_inches='tight')
+
+        return ax
+        
+
     def displayPlots(self):
         """display the plots"""
-        matchHistoryChampions = self.plotMatchHistoryChampions()
+        plotChampions = self.plotMatchHistoryChampions()
+        plotRoles = self.plotMatchHistoryRoles()
 
         plt.show()
