@@ -5,19 +5,19 @@ from GameInfo import GameInfo
 
 def main():
 
-    gameInfo = GameInfo()
-    gameInfo.storeQueueIds()
-    gameInfo.storeSeasoninfo()
-    gameInfo.storeMapInfo()
-    gameInfo.storeGameModeInfo()
-    gameInfo.storeGameTypeInfo()
+    # gameInfo = GameInfo()
+    # gameInfo.storeQueueIds()
+    # gameInfo.storeSeasoninfo()
+    # gameInfo.storeMapInfo()
+    # gameInfo.storeGameModeInfo()
+    # gameInfo.storeGameTypeInfo()
 
 
-    champions = ChampionInfo()
-    champions.storeChampionJson()
-    champions.storeChampionPairs("IdKey")
-    champions.storeChampionPairs("KeyId")
-    print(champions.getChampionKeyOrId("IdKey", "Anivia"))
+    # champions = ChampionInfo()
+    # champions.storeChampionJson()
+    # champions.storeChampionPairs("IdKey")
+    # champions.storeChampionPairs("KeyId")
+    # print(champions.getChampionKeyOrId("IdKey", "Anivia"))
 
 
     summonerName = 'Rajiv'
@@ -30,7 +30,8 @@ def main():
     summonerMatchHistory.storeMatchHistory()
     print(summonerMatchHistory.getChampionsPlayed())
     print(summonerMatchHistory.countChampionsPlayed())
-
+    # summonerMatchHistory.plotMatchHistoryChampions()
+    summonerMatchHistory.displayPlots()
 
 
 if __name__ == "__main__":

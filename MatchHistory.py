@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import matplotlib.pyplot as plt
 from collections import Counter
 from APIKey import api_key
 from PlayerInfo import PlayerInfo
@@ -76,10 +77,7 @@ class MatchHistory:
     
     def countChampionsPlayed(self):
         """get a count of the number of times each champion is played"""
-        # built in method? or tricky?
-        # put champions into list, count them in there 
-        # .count is slow in a loop (checks over entire list everytime)
-        # use Counter instead
+        # use this instead of list form?
         championsPlayed = self.getChampionsPlayed()
         countChampions = Counter(championsPlayed)
 
@@ -115,4 +113,19 @@ class MatchHistory:
 
     def plotMatchHistoryChampions(self):
         """Make a plot of the champions played"""
-        pass
+        championsPlayed = self.countChampionsPlayed()
+        figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}{self.championFile}{self.queueFile}MatchHistory.png"
+
+        plt.style.use('dark_background')
+        fig, ax = plt.subplots()
+        ax.bar(championsPlayed.keys(), championsPlayed.values())
+        ax.tick_params(axis='x', which='major', rotation=90)
+        plt.savefig(figureFilename,bbox_inches='tight')
+
+        return ax
+    
+    def displayPlots(self):
+        """display the plots"""
+        matchHistoryChampions = self.plotMatchHistoryChampions()
+
+        plt.show()
