@@ -118,18 +118,36 @@ class MatchHistory:
         
         return gameIds
     
-    def getDetailedMatchData(self, startIndex=0, endIndex=100):
-        """pull the detailed match data from the API """
-        # this calls the API many times
+    def getDetailedMatchData(self, gameId):
+        """pull the detailed match data from the API and store it """
+        # better to get then store? need a loop in the store function
+
         gameIds = self.getGameIds()
-        filename = self.matchHistoryFile
 
-        for game in gameIds:
+        if gameIds.contains(gameID):
+            url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchByMatchId}{gameId}?{self.serverSettings.api_suffix}"
+            r = requests.get(url)
+            print(f"Status code: {r.status_code}")
+
+            matchData = r.json()
+
+            return matchData
+        else:
+            print("Invalid match ID")
+
+    def storeDetailedMatchData(self):
+        """store the detailed match data """
+        
+        gameIds = self.getGameIds()
+
+        for gameId in gameIds:
             # loop through each game ID and store the match file
-            pass
+            gameFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{game}.json
 
+            matchData = getDetailedMatchData(gameId)
 
-        pass
+            with open(gameFilename, "w") as f:
+                json.dump(matchData, f, indent=4)
 
     def plotMatchHistoryChampions(self):
         """Make a plot of the champions played"""

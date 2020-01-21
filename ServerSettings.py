@@ -11,6 +11,7 @@ class ServerSettings:
         self.apiRankedStatsSummonerName = f"/lol/league/v4/entries/by-summoner/"
         self.apiPlayerSummonerName = f"/lol/summoner/v4/summoners/by-name/"
         self.apiMatchlistAccountId = f"/lol/match/v4/matchlists/by-account/"
+        self.apiMatchByMatchId = f"/lol/match/v4/matches/"
 
         """below are links to ddragon calls"""
         self.dragonChampJson = f"https://ddragon.leagueoflegends.com/cdn/10.1.1/data/en_US/champion.json"
