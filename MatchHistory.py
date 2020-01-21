@@ -22,7 +22,7 @@ class MatchHistory:
         # index values for range of games to get from api
         self.beginIndex = beginIndex
         self.endIndex = endIndex
-        # objects
+
         self.serverSettings = ServerSettings(self.server)
         self.championInfo = ChampionInfo(self.server)
         self.fileStorage = FileStorage()
@@ -149,7 +149,7 @@ class MatchHistory:
 
     def plotMatchHistoryChampions(self):
         """Make a plot of the champions played"""
-        # ordereddict better? bit slower but prettier
+        # ordereddict better? bit slower but looks better
         championsPlayed = self.countChampionsPlayed()
         figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}ChampionsMatchHistory.png"
 
@@ -181,3 +181,13 @@ class MatchHistory:
         plotRoles = self.plotMatchHistoryRoles()
 
         plt.show()
+
+
+class MatchStats:
+    """Class to go through the games in the match history and get indepth stats from it"""
+    # breaking this into seperate class for organization
+    # there will be many stats to pull from the match data, better to split up
+
+    def __init__(self):
+        # inherit MatchHistory?
+    pass
