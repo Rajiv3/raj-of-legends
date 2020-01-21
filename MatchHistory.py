@@ -14,11 +14,15 @@ class MatchHistory:
     # Note that there is a limit to how far back the data can be fetched
     # don't want to delete old data (how to solve? add to dictionary?)
 
-    def __init__(self, summonerName, server = "na1", champion = "", queue = ""):
+    def __init__(self, summonerName, server = "na1", champion = "", queue = "", beginIndex = 0, endIndex = 100):
         self.summonerName = summonerName
         self.champion = champion
         self.queue = queue
         self.server = server
+        # index values for range of games to get from api
+        self.beginIndex = beginIndex
+        self.endIndex = endIndex
+        # objects
         self.serverSettings = ServerSettings(self.server)
         self.championInfo = ChampionInfo(self.server)
         self.fileStorage = FileStorage()
@@ -28,14 +32,14 @@ class MatchHistory:
         # file handling
         self.queueFile = self.queue.title()
         self.championFile = self.champion.replace(" ", "") #no spaces
-        self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}MatchHistory.json"
+        self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}{self.beginIndex}-{self.endIndex}MatchHistory.json"
         self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/matches"
     
     def checkPlayerData(self):
-        """check if data for the user already exists, if not, build it. if yes, add to it(how?)"""
+        """check if data for the user already exists, if not, build it. if yes, add to it"""
         pass
 
-    def getMatchHistory(self, startIndex=0, endIndex=100):
+    def getMatchHistory(self):
         """get the match history with an API call"""
         if self.champion != "":
             champKey = self.championInfo.getChampionKeyOrId("IdKey", self.champion)
@@ -44,7 +48,7 @@ class MatchHistory:
         queueId = self.gameInfo.relevantQueueIds(self.queue)
         accountId = self.playerInfo.getAccountId()
 
-        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={queueId}&{self.serverSettings.api_suffix}"
+        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={queueId}&beginIndex={self.beginIndex}&endIndex={self.endIndex}&{self.serverSettings.api_suffix}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
 

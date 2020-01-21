@@ -1,9 +1,7 @@
- def storeSummonerInfo(self):
-Use this to store the data in a file. Then save the information for later.
 Enter in a summoner and it will pull the data from last time, with the option to update it.
-
 
 NEED to check if required things exist before calling them - avoiding this will result in disaster
 
-
 API request limited to 100 per 2 minutes - harder to pull lots of data without waiting
+
+right now all match histories are in seperate files - consider adding them a single file and updating that file
