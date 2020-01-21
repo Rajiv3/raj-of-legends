@@ -21,17 +21,18 @@ def main():
 
 
     summonerName = 'Rajiv'
-    summoner = PlayerInfo(summonerName, "na1")
-    summoner.storePlayerInfo()
+    # summoner = PlayerInfo(summonerName, "na1")
+    # summoner.storePlayerInfo()
 
 
     # summonerMatchHistory = MatchHistory(summonerName, "na1", "Dr. Mundo", "solo")
     summonerMatchHistory = MatchHistory(summonerName, "na1", queue="solo")
     summonerMatchHistory.storeMatchHistory()
-    print(summonerMatchHistory.getChampionsPlayed())
-    print(summonerMatchHistory.countChampionsPlayed())
+    # print(summonerMatchHistory.getChampionsPlayed())
+    # print(summonerMatchHistory.countChampionsPlayed())
     # summonerMatchHistory.plotMatchHistoryChampions()
-    summonerMatchHistory.displayPlots()
+    # summonerMatchHistory.displayPlots()
+    summonerMatchHistory.storeDetailedMatchData()
 
 
 if __name__ == "__main__":

@@ -29,6 +29,7 @@ class MatchHistory:
         self.queueFile = self.queue.title()
         self.championFile = self.champion.replace(" ", "") #no spaces
         self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}MatchHistory.json"
+        self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/matches"
     
     def checkPlayerData(self):
         """check if data for the user already exists, if not, build it. if yes, add to it(how?)"""
@@ -120,31 +121,24 @@ class MatchHistory:
     
     def getDetailedMatchData(self, gameId):
         """pull the detailed match data from the API and store it """
-        # better to get then store? need a loop in the store function
+        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchByMatchId}{gameId}?{self.serverSettings.api_suffix}"
+        r = requests.get(url)
+        print(f"Status code: {r.status_code}")
 
-        gameIds = self.getGameIds()
+        matchData = r.json()
 
-        if gameIds.contains(gameID):
-            url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchByMatchId}{gameId}?{self.serverSettings.api_suffix}"
-            r = requests.get(url)
-            print(f"Status code: {r.status_code}")
-
-            matchData = r.json()
-
-            return matchData
-        else:
-            print("Invalid match ID")
+        return matchData
 
     def storeDetailedMatchData(self):
         """store the detailed match data """
-        
+        self.fileStorage.makePath(self.detailedMatchesFolder)
         gameIds = self.getGameIds()
 
         for gameId in gameIds:
             # loop through each game ID and store the match file
-            gameFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{game}.json
+            gameFilename = f"{self.detailedMatchesFolder}/{gameId}.json"
 
-            matchData = getDetailedMatchData(gameId)
+            matchData = self.getDetailedMatchData(gameId)
 
             with open(gameFilename, "w") as f:
                 json.dump(matchData, f, indent=4)
