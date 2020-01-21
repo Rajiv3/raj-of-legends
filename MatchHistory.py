@@ -26,7 +26,7 @@ class MatchHistory:
         self.gameInfo = GameInfo(self.server)
 
         # file handling
-        self.queueFile = self.queue.title() #prettier
+        self.queueFile = self.queue.title()
         self.championFile = self.champion.replace(" ", "") #no spaces
         self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}MatchHistory.json"
     
@@ -34,7 +34,7 @@ class MatchHistory:
         """check if data for the user already exists, if not, build it. if yes, add to it(how?)"""
         pass
 
-    def getMatchHistory(self):
+    def getMatchHistory(self, startIndex=0, endIndex=100):
         """get the match history with an API call"""
         if self.champion != "":
             champKey = self.championInfo.getChampionKeyOrId("IdKey", self.champion)
@@ -117,6 +117,19 @@ class MatchHistory:
             gameIds.append(gameId)
         
         return gameIds
+    
+    def getDetailedMatchData(self, startIndex=0, endIndex=100):
+        """pull the detailed match data from the API """
+        # this calls the API many times
+        gameIds = self.getGameIds()
+        filename = self.matchHistoryFile
+
+        for game in gameIds:
+            # loop through each game ID and store the match file
+            pass
+
+
+        pass
 
     def plotMatchHistoryChampions(self):
         """Make a plot of the champions played"""
@@ -124,7 +137,7 @@ class MatchHistory:
         championsPlayed = self.countChampionsPlayed()
         figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}ChampionsMatchHistory.png"
 
-        # need to make this prettier
+        # pick different style
         plt.style.use('dark_background')
         fig, ax = plt.subplots()
         ax.bar(championsPlayed.keys(), championsPlayed.values())
@@ -145,7 +158,6 @@ class MatchHistory:
         plt.savefig(figureFilename,bbox_inches='tight')
 
         return ax
-        
 
     def displayPlots(self):
         """display the plots"""
