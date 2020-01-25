@@ -2,6 +2,7 @@ import requests
 import json
 import os
 import matplotlib.pyplot as plt
+import datetime
 from collections import Counter
 from APIKey import api_key
 from PlayerInfo import PlayerInfo
@@ -9,6 +10,7 @@ from ServerSettings import ServerSettings
 from ChampionInfo import ChampionInfo
 from FileStorage import FileStorage
 from GameInfo import GameInfo
+
 class MatchHistory:
     """Class to get and maintain the match history of a user"""
     # Note that there is a limit to how far back the data can be fetched
@@ -19,10 +21,11 @@ class MatchHistory:
         self.champion = champion
         self.queue = queue
         self.server = server
+        self.todayDate = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
         # index values for range of games to get from api
         self.beginIndex = beginIndex
         self.endIndex = endIndex
-
+        
         self.serverSettings = ServerSettings(self.server)
         self.championInfo = ChampionInfo(self.server)
         self.fileStorage = FileStorage()
@@ -32,7 +35,7 @@ class MatchHistory:
         # file handling
         self.queueFile = self.queue.title()
         self.championFile = self.champion.replace(" ", "") #no spaces
-        self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}{self.beginIndex}-{self.endIndex}MatchHistory.json"
+        self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}{self.todayDate}MatchHistory.json"
         self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/matches"
     
     def checkPlayerData(self):
@@ -181,13 +184,3 @@ class MatchHistory:
         plotRoles = self.plotMatchHistoryRoles()
 
         plt.show()
-
-
-class MatchStats:
-    """Class to go through the games in the match history and get indepth stats from it"""
-    # breaking this into seperate class for organization
-    # there will be many stats to pull from the match data, better to split up
-
-    def __init__(self):
-        # inherit MatchHistory?
-    pass
