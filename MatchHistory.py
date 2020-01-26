@@ -16,15 +16,13 @@ class MatchHistory:
     # Note that there is a limit to how far back the data can be fetched
     # don't want to delete old data (how to solve? add to dictionary?)
 
-    def __init__(self, summonerName, server = "na1", champion = "", queue = "", beginIndex = 0, endIndex = 100):
+    def __init__(self, summonerName, server = "na1", champion = "", queue = ""):
         self.summonerName = summonerName
         self.champion = champion
         self.queue = queue
         self.server = server
         self.todayDate = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
         # index values for range of games to get from api
-        self.beginIndex = beginIndex
-        self.endIndex = endIndex
         
         self.serverSettings = ServerSettings(self.server)
         self.championInfo = ChampionInfo(self.server)
@@ -35,23 +33,36 @@ class MatchHistory:
         # file handling
         self.queueFile = self.queue.title()
         self.championFile = self.champion.replace(" ", "") #no spaces
-        self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}{self.todayDate}MatchHistory.json"
-        self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/matches"
+        self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}{self.todayDate}MatchHistory.json"
+        self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/matches"
     
     def checkPlayerData(self):
         """check if data for the user already exists, if not, build it. if yes, add to it"""
         pass
+        
+    def getMatchRange(self):
+        """get range of games for match history """
+        beginIndex = input("Begin Index: ")
+        endIndex = input("End Index: ")
+        return beginIndex, endIndex
 
-    def getMatchHistory(self):
-        """get the match history with an API call"""
+    def translateChampKey(self, order, champion):
+        """helper function to get the champs key in proper format for getMatchHistory"""
         if self.champion != "":
-            champKey = self.championInfo.getChampionKeyOrId("IdKey", self.champion)
+            champKey = self.championInfo.getChampionKeyOrId(order, self.champion)
         else: 
             champKey = ""
+        return champKey
+
+    def getMatchHistory(self, range):
+        """get the match history with an API call"""
+        beginIndex = range[0]
+        endIndex = range[1]
+        champKey = self.translateChampKey("IdKey", self.champion)
         queueId = self.gameInfo.relevantQueueIds(self.queue)
         accountId = self.playerInfo.getAccountId()
 
-        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={queueId}&beginIndex={self.beginIndex}&endIndex={self.endIndex}&{self.serverSettings.api_suffix}"
+        url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiMatchlistAccountId}{accountId}?champion={champKey}&queue={queueId}&beginIndex={beginIndex}&endIndex={endIndex}&{self.serverSettings.api_suffix}"
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
 
@@ -61,10 +72,11 @@ class MatchHistory:
     
     def storeMatchHistory(self):
         """store the match history in a file"""
-        self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
+        self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}")
         filename = self.matchHistoryFile
 
-        matchHistory = self.getMatchHistory()   
+        gameRange = self.getMatchRange()
+        matchHistory = self.getMatchHistory(gameRange)   
 
         with open(filename, 'w') as f:
             json.dump(matchHistory, f, indent=4)

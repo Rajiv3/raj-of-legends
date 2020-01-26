@@ -20,13 +20,13 @@ def main():
     # print(champions.getChampionKeyOrId("IdKey", "Anivia"))
 
 
-    summonerName = 'Rajiv'
+    summonerName = input("Summoner Name: ")
     # summoner = PlayerInfo(summonerName, "na1")
     # summoner.storePlayerInfo()
 
 
     # summonerMatchHistory = MatchHistory(summonerName, "na1", "Dr. Mundo", "solo")
-    summonerMatchHistory = MatchHistory(summonerName, server="na1", queue="solo",beginIndex=0, endIndex=75)
+    summonerMatchHistory = MatchHistory(summonerName, server="na1", queue="solo")
     summonerMatchHistory.storeMatchHistory()
     # print(summonerMatchHistory.getChampionsPlayed())
     # print(summonerMatchHistory.countChampionsPlayed())

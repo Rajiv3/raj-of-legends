@@ -1,7 +1,8 @@
 Enter in a summoner and it will pull the data from last time, with the option to update it.
+user can request to pull data from further back if wanted
 
 NEED to check if required things exist before calling them - avoiding this will result in disaster
 
-API request limited to 100 per 2 minutes - harder to pull lots of data without waiting
+match stats will go into a players folder and pull the info from what is saved there
 
 right now all match histories are in seperate files - consider adding them a single file and updating that file
