@@ -84,19 +84,27 @@ class MatchHistory:
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}")
         masterFilename = self.masterMatchHistoryFile
         masterMatchHistoryExists = os.path.exists(masterFilename)
+        gameIdsExists = os.path.exists(self.gameIdFile)
+
+
 
         with open(self.matchHistoryFile) as f:
             currentMatchHistory = json.load(f)
 
-        if masterMatchHistoryExists:
-            with open(masterFilename) as f:
+        if masterMatchHistoryExists and gameIdsExists:
+            with open(self.gameIdFile) as f:
+                allGameIds = json.load(f)
+            with open(masterFilename, "r") as f:
                 masterMatchHistory = json.load(f)
-            newMasterMatchHistory = {**currentMatchHistory, **masterMatchHistory}
+                for match in currentMatchHistory:
+                    gameId = match["gameId"]
+                    if gameId not in allGameIds:
+                        masterMatchHistory.append(match)
         else:
-            newMasterMatchHistory = currentMatchHistory
+            masterMatchHistory = currentMatchHistory
 
         with open(masterFilename, 'w') as f:
-            json.dump(newMasterMatchHistory, f, indent=4)
+            json.dump(masterMatchHistory, f, indent=4)
 
     def getChampionsPlayed(self):
         """return a list of the champions played in the requested matchHistory"""
