@@ -14,12 +14,6 @@ class ChampionInfo:
         self.championJsonFilename = f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}/championInfo.json"
         self.championKeyIdFilename = f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}/championKeyIdPairs.json"
         self.championIdKeyFilename = f"{self.fileStorage.dataStoragePath}/{self.championInfoDirectory}/championIdKeyPairs.json"
-        
-
-    def checkChampionJson(self):
-        """check if the champion info json exists"""
-        # if it does not, run storeChampionJson.
-        pass
 
     def getChampionJson(self):
         url = f"{self.serverSettings.dragonChampJson}"

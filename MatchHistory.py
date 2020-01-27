@@ -3,6 +3,7 @@ import json
 import os
 import matplotlib.pyplot as plt
 import datetime
+
 from collections import Counter
 from APIKey import api_key
 from PlayerInfo import PlayerInfo
@@ -21,8 +22,7 @@ class MatchHistory:
         self.champion = champion
         self.queue = queue
         self.server = server
-        self.todayDate = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
-        # index values for range of games to get from api
+        self.todayDate = datetime.datetime.today().strftime('%Y%m%d%H%M')
         
         self.serverSettings = ServerSettings(self.server)
         self.championInfo = ChampionInfo(self.server)
@@ -34,13 +34,11 @@ class MatchHistory:
         self.queueFile = self.queue.title()
         self.championFile = self.champion.replace(" ", "") #no spaces
         self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}{self.todayDate}MatchHistory.json"
+        self.masterMatchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/MasterMatchHistory.json"
         self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/matches"
-    
-    def checkPlayerData(self):
-        """check if data for the user already exists, if not, build it. if yes, add to it"""
-        pass
+        self.gameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/GameIds.json"
         
-    def getMatchRange(self):
+    def inputMatchRange(self):
         """get range of games for match history """
         beginIndex = input("Begin Index: ")
         endIndex = input("End Index: ")
@@ -66,27 +64,46 @@ class MatchHistory:
         r = requests.get(url)
         print(f"Status code: {r.status_code}")
 
-        matchHistory = r.json()
+        matchHistory = r.json()['matches']
 
         return matchHistory
-    
+
     def storeMatchHistory(self):
         """store the match history in a file"""
         self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}")
         filename = self.matchHistoryFile
 
-        gameRange = self.getMatchRange()
-        matchHistory = self.getMatchHistory(gameRange)   
+        matchRange = self.inputMatchRange()
+        matchHistory = self.getMatchHistory(matchRange)
 
         with open(filename, 'w') as f:
             json.dump(matchHistory, f, indent=4)
-    
+
+    def storeMasterMatchHistory(self):
+        """add the pulled match histories into a master file if they are not already in it """
+        self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}")
+        masterFilename = self.masterMatchHistoryFile
+        masterMatchHistoryExists = os.path.exists(masterFilename)
+
+        with open(self.matchHistoryFile) as f:
+            currentMatchHistory = json.load(f)
+
+        if masterMatchHistoryExists:
+            with open(masterFilename) as f:
+                masterMatchHistory = json.load(f)
+            newMasterMatchHistory = {**currentMatchHistory, **masterMatchHistory}
+        else:
+            newMasterMatchHistory = currentMatchHistory
+
+        with open(masterFilename, 'w') as f:
+            json.dump(newMasterMatchHistory, f, indent=4)
+
     def getChampionsPlayed(self):
         """return a list of the champions played in the requested matchHistory"""
         # check the file, get a list, return it.
         filename = self.matchHistoryFile
         with open(filename) as f:
-            matches = json.load(f)["matches"]
+            matches = json.load(f)
         
         championsPlayed = []
         for match in matches:
@@ -107,7 +124,7 @@ class MatchHistory:
         """return a list of the roles played"""
         filename = self.matchHistoryFile
         with open(filename) as f:
-            matches = json.load(f)["matches"]
+            matches = json.load(f)
         
         rolesPlayed = []
         for match in matches:
@@ -129,7 +146,7 @@ class MatchHistory:
         """return a list of the game ids"""
         filename = self.matchHistoryFile
         with open(filename) as f:
-            matches = json.load(f)["matches"]
+            matches = json.load(f)
         
         gameIds = []
         for match in matches:
@@ -137,6 +154,22 @@ class MatchHistory:
             gameIds.append(gameId)
         
         return gameIds
+
+    def storeGameIds(self):
+        """store a list of the game ids, use these to keep track for master file"""
+        filename = self.gameIdFile
+        doGameIdsExist = os.path.exists(filename)
+        currentGameIds = self.getGameIds()
+
+        if doGameIdsExist:
+            with open(filename, 'r') as f:
+                masterGameIds = json.load(f)
+            with open(filename, 'w') as f:
+                fullGameIds = list(set(masterGameIds + currentGameIds))
+                json.dump(fullGameIds, f)
+        else:
+            with open(filename, 'w') as f:
+                json.dump(currentGameIds, f)
     
     def getDetailedMatchData(self, gameId):
         """pull the detailed match data from the API and store it """
@@ -196,3 +229,6 @@ class MatchHistory:
         plotRoles = self.plotMatchHistoryRoles()
 
         plt.show()
+
+    def deleteMatchHistoryFile(self):
+        os.remove(self.matchHistoryFile)

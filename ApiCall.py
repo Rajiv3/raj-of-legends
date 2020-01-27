@@ -2,7 +2,7 @@ from ServerSettings import ServerSettings
 
 class ApiCall:
     """class to call the API"""
-    """actually don't want this because might want to put more parameters into requests.get()?"""
+    """put more parameters into requests.get()?"""
 
     def __init__(self, url):
         self.url = url

@@ -15,11 +15,10 @@ class PlayerInfo:
         self.summonerName = summonerName
         self.serverSettings = ServerSettings(self.server)
         self.fileStorage = FileStorage()
-        self.playerSummaryFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.summonerName}PlayerSummary.json"
-
+        self.playerSummaryDirectory = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}"
+        self.playerSummaryFilename = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.summonerName}PlayerSummary.json"
 
     # combined into one longer function to minimize API calls
-    # this is not called all the time to reduce calls to the API
     def getPlayerInfo(self):
         """get the user info from API"""
         url = f"{self.serverSettings.api_prefix}{self.serverSettings.apiPlayerSummonerName}{self.summonerName}?{self.serverSettings.api_suffix}"
@@ -56,18 +55,25 @@ class PlayerInfo:
 
     def storePlayerInfo(self):
         """function to store the information about the summoner"""
-        self.fileStorage.makePath(f"{self.fileStorage.dataStoragePath}/{self.summonerName}")
+        self.fileStorage.makePath(self.playerSummaryDirectory)
 
         playerInfo = self.getPlayerInfo()
 
         with open(self.playerSummaryFilename, 'w') as f:
             json.dump(playerInfo, f, indent=4)
 
+    def checkPlayerSummary(self):
+        """check if data for the user already exists, if not, build it"""
+        doesPlayerExist = os.path.exists(self.playerSummaryFilename)
+        if not doesPlayerExist:
+            self.getPlayerInfo()
+
     # below are the methods to call the player info. These are used instead of
     # getPlayerInfo() because that calls the api each time
     # putting them in seperate methods makes it easier to use in other places
     def getSummonerName(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         summonerName = playerData['Summoner name']
@@ -76,6 +82,7 @@ class PlayerInfo:
 
     def getSummonerID(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         summonerId = playerData['Summoner ID']
@@ -84,6 +91,7 @@ class PlayerInfo:
 
     def getAccountId(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         accountId = playerData['Account ID']
@@ -92,6 +100,7 @@ class PlayerInfo:
         
     def getPlayerLevel(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         playerLevel = playerData['Level']
@@ -100,6 +109,7 @@ class PlayerInfo:
 
     def getProfilePic(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         profilePic = playerData['Profile Pic']
@@ -108,6 +118,7 @@ class PlayerInfo:
         
     def getQueueType(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         queueType = playerData['Queue Type']
@@ -116,6 +127,7 @@ class PlayerInfo:
 
     def getPlayerTier(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         playerTier = playerData['Tier']
@@ -124,6 +136,7 @@ class PlayerInfo:
 
     def getPlayerRank(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         playerRank = playerData['Rank']
@@ -132,6 +145,7 @@ class PlayerInfo:
 
     def getPlayerWins(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         playerWins = playerData['Wins']
@@ -140,6 +154,7 @@ class PlayerInfo:
         
     def getPlayerLosses(self):
         """pull the required user info from the file"""
+        self.checkPlayerSummary()
         with open(self.playerSummaryFilename) as f:
             playerData = json.load(f)
         playerLosses = playerData['Losses']
