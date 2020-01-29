@@ -22,7 +22,7 @@ class MatchHistory:
         self.champion = champion
         self.queue = queue
         self.server = server
-        self.todayDate = datetime.datetime.today().strftime('%Y%m%d%H%M')
+        self.todayDate = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
         
         self.serverSettings = ServerSettings(self.server)
         self.championInfo = ChampionInfo(self.server)
@@ -33,10 +33,17 @@ class MatchHistory:
         # file handling
         self.queueFile = self.queue.title()
         self.championFile = self.champion.replace(" ", "") #no spaces
+        # the temporary match history file, pulled from the api
         self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}{self.todayDate}MatchHistory.json"
+        # the master match history file, stores every game
         self.masterMatchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/MasterMatchHistory.json"
+        # master match history for a specific champion/queue 
+        self.specificMatchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}MatchHistory.json"
+        # game id files - the master and the specific one
+        self.gameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/MasterGameIds.json"
+        self.specificGameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}GameIds.json"
         self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/matches"
-        self.gameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/GameIds.json"
+
         
     def inputMatchRange(self):
         """get range of games for match history """
@@ -54,6 +61,7 @@ class MatchHistory:
 
     def getMatchHistory(self, range):
         """get the match history with an API call"""
+        # champions can actually be a set(look into what you can do with that)
         beginIndex = range[0]
         endIndex = range[1]
         champKey = self.translateChampKey("IdKey", self.champion)
@@ -86,11 +94,14 @@ class MatchHistory:
         masterMatchHistoryExists = os.path.exists(masterFilename)
         gameIdsExists = os.path.exists(self.gameIdFile)
 
-
+        specificFilename = self.specificMatchHistoryFile
+        specificMatchHistoryExists = os.path.exists(specificFilename)
+        specificGameIdsExists = os.path.exists(self.specificGameIdFile)
 
         with open(self.matchHistoryFile) as f:
             currentMatchHistory = json.load(f)
 
+        # refactor below
         if masterMatchHistoryExists and gameIdsExists:
             with open(self.gameIdFile) as f:
                 allGameIds = json.load(f)
@@ -103,8 +114,23 @@ class MatchHistory:
         else:
             masterMatchHistory = currentMatchHistory
 
+        if specificMatchHistoryExists and specificGameIdsExists:
+            with open(self.specificGameIdFile) as f:
+                specificGameIds = json.load(f)
+            with open(specificFilename, "r") as f:
+                specificMatchHistory = json.load(f)
+                for match in currentMatchHistory:
+                    gameId = match["gameId"]
+                    if gameId not in specificGameIds:
+                        specificMatchHistory.append(match)                        
+        else:
+            specificMatchHistory = currentMatchHistory
+
         with open(masterFilename, 'w') as f:
             json.dump(masterMatchHistory, f, indent=4)
+
+        with open(specificFilename, 'w') as f:
+            json.dump(specificMatchHistory, f, indent=4)
 
     def getChampionsPlayed(self):
         """return a list of the champions played in the requested matchHistory"""
@@ -166,10 +192,15 @@ class MatchHistory:
     def storeGameIds(self):
         """store a list of the game ids, use these to keep track for master file"""
         filename = self.gameIdFile
-        doGameIdsExist = os.path.exists(filename)
+        gameIdsExist = os.path.exists(filename)
         currentGameIds = self.getGameIds()
 
-        if doGameIdsExist:
+        # refactor below 
+        specificFilename = self.specificGameIdFile
+        specififGameIdsExist = os.path.exists(specificFilename)
+        # currentGameIds = self.getGameIds()
+
+        if gameIdsExist:
             with open(filename, 'r') as f:
                 masterGameIds = json.load(f)
             with open(filename, 'w') as f:
@@ -177,6 +208,17 @@ class MatchHistory:
                 json.dump(fullGameIds, f)
         else:
             with open(filename, 'w') as f:
+                json.dump(currentGameIds, f)
+
+        # Need this to be per champ/queue
+        if specififGameIdsExist:
+            with open(specificFilename, 'r') as f:
+                specificGameIds = json.load(f)
+            with open(specificFilename, 'w') as f:
+                specificGameIds = list(set(specificGameIds + currentGameIds))
+                json.dump(fullGameIds, f)
+        else:
+            with open(specificFilename, 'w') as f:
                 json.dump(currentGameIds, f)
     
     def getDetailedMatchData(self, gameId):

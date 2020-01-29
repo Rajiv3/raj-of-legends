@@ -3,4 +3,14 @@ user can request to pull data from further back if wanted
 
 match stats will go into a players folder and pull the info from what is saved there
 
-right now all match histories are in seperate files - consider adding them a single file and updating that file
+Want different match history files: Master(done), all games on specified champion, all games in specified queue, all games that are a mix of those
+
+2 ways of doing this: pull from the master match history or pull the data from the api 
+-pulling from api is better
+
+-so need to keep a master match history for each of the champions and queues.
+-still want to put these games into master
+-need multiple game ID files?
+-for the values in the game ID files, download the match data
+
+- dont want multiple matches folders - need to deal with these in a different way (just use the game id files to look for the relevant games)

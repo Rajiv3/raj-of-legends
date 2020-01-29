@@ -24,7 +24,7 @@ def main():
     summoner = PlayerInfo(summonerName, "na1")
     summoner.storePlayerInfo()
 
-    summonerMatchHistory = MatchHistory(summonerName, server="na1", queue="solo")
+    summonerMatchHistory = MatchHistory(summonerName, server="na1", queue="solo", champion="Syndra")
     summonerMatchHistory.storeMatchHistory()
     summonerMatchHistory.storeMasterMatchHistory()
     summonerMatchHistory.storeGameIds()
