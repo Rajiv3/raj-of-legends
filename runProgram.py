@@ -32,7 +32,7 @@ def main():
     # print(summonerMatchHistory.countChampionsPlayed())
     # summonerMatchHistory.plotMatchHistoryChampions()
     # summonerMatchHistory.displayPlots()
-    # summonerMatchHistory.storeDetailedMatchData()
+    summonerMatchHistory.storeDetailedMatchData()
     # summonerMatchHistory.deleteMatchHistoryFile()
 
 

@@ -36,11 +36,11 @@ class MatchHistory:
         # the temporary match history file, pulled from the api
         self.matchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}{self.todayDate}MatchHistory.json"
         # the master match history file, stores every game
-        self.masterMatchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/MasterMatchHistory.json"
+        self.masterMatchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/MatchHistory.json"
         # master match history for a specific champion/queue 
         self.specificMatchHistoryFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}MatchHistory.json"
         # game id files - the master and the specific one
-        self.gameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/MasterGameIds.json"
+        self.gameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/GameIds.json"
         self.specificGameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}GameIds.json"
         self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/matches"
 
