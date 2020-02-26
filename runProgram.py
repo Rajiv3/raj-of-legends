@@ -6,19 +6,19 @@ from MatchStats import MatchStats
 
 def main():
 
-    # gameInfo = GameInfo()
-    # gameInfo.storeQueueIds()
-    # gameInfo.storeSeasoninfo()
-    # gameInfo.storeMapInfo()
-    # gameInfo.storeGameModeInfo()
-    # gameInfo.storeGameTypeInfo()
+    gameInfo = GameInfo()
+    gameInfo.storeQueueIds()
+    gameInfo.storeSeasoninfo()
+    gameInfo.storeMapInfo()
+    gameInfo.storeGameModeInfo()
+    gameInfo.storeGameTypeInfo()
 
 
-    # champions = ChampionInfo()
-    # champions.storeChampionJson()
-    # champions.storeChampionPairs("IdKey")
-    # champions.storeChampionPairs("KeyId")
-    # print(champions.getChampionKeyOrId("IdKey", "Anivia"))
+    champions = ChampionInfo()
+    champions.storeChampionJson()
+    champions.storeChampionPairs("IdKey")
+    champions.storeChampionPairs("KeyId")
+    print(champions.getChampionKeyOrId("IdKey", "Anivia"))
 
 
     summonerName = input("Summoner Name: ")
@@ -29,15 +29,15 @@ def main():
     summonerMatchHistory.storeMatchHistory()
     summonerMatchHistory.storeMasterMatchHistory()
     summonerMatchHistory.storeGameIds()
-    # print(summonerMatchHistory.getChampionsPlayed())
-    # print(summonerMatchHistory.countChampionsPlayed())
-    # summonerMatchHistory.plotMatchHistoryChampions()
-    # summonerMatchHistory.displayPlots()
+    print(summonerMatchHistory.getChampionsPlayed())
+    print(summonerMatchHistory.countChampionsPlayed())
+    summonerMatchHistory.displayPlots()
     summonerMatchHistory.storeDetailedMatchData()
     summonerMatchHistory.deleteMatchHistoryFile()
 
     summonerMatchStats = MatchStats(summonerName, server = "na1", queue = "solo",  champion = "")
-    print(summonerMatchStats.getCsDifferences())
+    print(summonerMatchStats.getCsValues())
+    summonerMatchStats.displayPlots()
 
 
 if __name__ == "__main__":

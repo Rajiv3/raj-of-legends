@@ -256,6 +256,9 @@ class MatchHistory:
         plt.style.use('dark_background')
         fig, ax = plt.subplots()
         ax.bar(championsPlayed.keys(), championsPlayed.values())
+        # plt.xlabel('Champion')
+        # plt.ylabel('Games Played')
+        plt.title('Number of Games On Each Champion')
         ax.tick_params(axis='x', which='major', rotation=90)
         plt.savefig(figureFilename,bbox_inches='tight')
 
@@ -269,6 +272,9 @@ class MatchHistory:
         plt.style.use('dark_background')
         fig, ax = plt.subplots()
         ax.bar(rolesPlayed.keys(), rolesPlayed.values())
+        # plt.xlabel('Role')
+        # plt.ylabel('Games Played')
+        plt.title('Number of Games On Each Role')
         ax.tick_params(axis='x', which='major', rotation=90)
         plt.savefig(figureFilename,bbox_inches='tight')
 
