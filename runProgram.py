@@ -2,6 +2,7 @@ from PlayerInfo import PlayerInfo
 from MatchHistory import MatchHistory
 from ChampionInfo import ChampionInfo
 from GameInfo import GameInfo
+from MatchStats import MatchStats
 
 def main():
 
@@ -24,7 +25,7 @@ def main():
     summoner = PlayerInfo(summonerName, "na1")
     summoner.storePlayerInfo()
 
-    summonerMatchHistory = MatchHistory(summonerName, server="na1", queue="solo", champion="Syndra")
+    summonerMatchHistory = MatchHistory(summonerName, server="na1", queue="solo", champion="")
     summonerMatchHistory.storeMatchHistory()
     summonerMatchHistory.storeMasterMatchHistory()
     summonerMatchHistory.storeGameIds()
@@ -33,7 +34,10 @@ def main():
     # summonerMatchHistory.plotMatchHistoryChampions()
     # summonerMatchHistory.displayPlots()
     summonerMatchHistory.storeDetailedMatchData()
-    # summonerMatchHistory.deleteMatchHistoryFile()
+    summonerMatchHistory.deleteMatchHistoryFile()
+
+    summonerMatchStats = MatchStats(summonerName, server = "na1", queue = "solo",  champion = "")
+    print(summonerMatchStats.getCsDifferences())
 
 
 if __name__ == "__main__":

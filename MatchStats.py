@@ -1,8 +1,8 @@
 import os
 import json
 
-import MatchHistory
-import FileStorage
+from MatchHistory import MatchHistory
+from FileStorage import FileStorage
 
 class MatchStats:
     """Class to go through the games in the match history and get indepth stats from it"""
@@ -25,25 +25,45 @@ class MatchStats:
         self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/matches"
 
 
-    def getParticpantId(self):
+    def getParticpantId(self, matchData):
         """stats are sorted by participant ID in the match files, will need to get that everytime"""
-        pass
+        try:
+            participants = matchData["participantIdentities"]
+        except KeyError:
+            pass
+        for participant in participants:
+            if participant['player']['summonerName'] == self.summonerName:
+                participantId = participant['participantId']
+        
+        return participantId
 
     def getCsDifferences(self):
         """get the values for the cs differential for the player in the list of game Ids"""
-        # this will be a list of tuples?
+
+        # might want to turn this into a function that pulls all the stats for the player, and then call this in other functions?
+
         gameIdFile = self.specificGameIdFile
 
         # get the game ids
         with open(gameIdFile) as f:
             gameIds = json.load(f)
 
-        # loop through all the games in gameIds, getting the 3 values for csd for the player
-        for game in gameIds:
-            with open(f"gameFilename{matchId}.json") as f:
-                # get the participant Id
-                participantId = self.getParticpantId()
+        csdList = []
 
-                # go into the participants list, if its the correct participant then get the values for CSD
-                if value == participantId:
-                    pass
+        # loop through all the games in gameIds, getting the csd values for the player
+        for game in gameIds:
+            with open(f"{self.detailedMatchesFolder}/{game}.json") as matchFile:
+                # get the participant Id
+                matchData = json.load(matchFile)
+                participantId = self.getParticpantId(matchData)
+
+                # go into the participants list, if its the correct participant then get the values for CSD (or all stats?)
+
+                participants = matchData["participants"]
+
+                for participant in participants:     
+                    if participant["participantId"] == participantId:
+                        csd = participant["timeline"]["creepsPerMinDeltas"]["0-10"]
+                        csdList.append(csd)
+        
+        return csdList

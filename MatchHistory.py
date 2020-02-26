@@ -43,7 +43,8 @@ class MatchHistory:
         self.gameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/GameIds.json"
         self.specificGameIdFile = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/{self.championFile}{self.queueFile}GameIds.json"
         self.detailedMatchesFolder = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}/matches"
-
+        # plot files
+        self.figureFilename = f"{self.fileStorage.dataStoragePath}/{self.server}/{self.summonerName}"
         
     def inputMatchRange(self):
         """get range of games for match history """
@@ -249,7 +250,7 @@ class MatchHistory:
         """Make a plot of the champions played"""
         # ordereddict better? bit slower but looks better
         championsPlayed = self.countChampionsPlayed()
-        figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}ChampionsMatchHistory.png"
+        figureFilename = f"{self.figureFilename}/ChampionsMatchHistory.png"
 
         # pick different style
         plt.style.use('dark_background')
@@ -263,7 +264,7 @@ class MatchHistory:
     def plotMatchHistoryRoles(self):
         """Make a plot of the roles played"""
         rolesPlayed = self.countRolesPlayed()
-        figureFilename = f"{self.fileStorage.dataStoragePath}/{self.summonerName}/{self.championFile}{self.queueFile}RolesMatchHistory.png"
+        figureFilename = f"{self.figureFilename}/RolesMatchHistory.png"
 
         plt.style.use('dark_background')
         fig, ax = plt.subplots()
